@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    String     @id @default(uuid())
+  email String  @unique
+  provider Provider
+  name  String?
+  counter Counter[]
+  shadowWon Int @default(0)
+  shadowLost Int @default(0)
+}
+
+model Counter {
+  id String @id @default(uuid())
+  useremail  String @unique
+  actualStartTime DateTime?
+  startTime DateTime?
+  relapseTime DateTime?
+  lastRelpase DateTime?
+  streakReduction Int @default(0)
+  relapseRecord  DateTime[] @default([])
+  User User @relation(fields: [useremail],references: [email])
+}
+
+enum Provider {
+  Google
+}
