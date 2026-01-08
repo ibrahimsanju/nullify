@@ -4,7 +4,7 @@ import { memo, useEffect, useState } from 'react';
 import ShadowCard from './ShadowCard';
 import { useCounterStore } from '@/store/counterStore';
 import { Milestone } from 'lucide-react';
-import { DeleteRelapse } from '../actions/user';
+import { DeleteRelapse, postShadowFight } from '../actions/user';
 
 interface MilestonesProps{
     label:number,
@@ -95,40 +95,31 @@ const ShadowMode = () => {
         return milestonesAndPercentage
     }
 
-    useEffect( ()=>{
-        let isMounted = true
+    useEffect(() => {
+  if (!isShadow) return
 
-        if (lastStreak!=0){
-            if (isMounted) setIsShadow(true)
-        }
-        if(isShadow){
-            let dividedMilestones = divideStreaktoMilestone(lastStreak)
+  const run = async () => {
+    const dividedMilestones = divideStreaktoMilestone(lastStreak)
+    const dividedMilestonesandPercentage =
+      milestoneAndPercentCalc(counter, dividedMilestones)
 
-            let dividedMilestonesandPercentage = milestoneAndPercentCalc(counter,dividedMilestones)
-            const DaysToBeAddedToCounter = calcluateDaysToBeAdded(lastStreak,percentageTobeCalculated)
-            console.log("This is the old Counter",counter)
-            setToAdd(DaysToBeAddedToCounter)
-            console.log("This is the New Counter",counter)
-            console.log("This is the last streak",lastStreak)
-            console.log("This is the Main Percentage",percentageTobeCalculated)
-            console.log("This is the Days Added",DaysToBeAddedToCounter)
-            console.log("This is the isshadow",isShadow)
-            if (isMounted) {
-                setMilestones(dividedMilestonesandPercentage)
-                if (dividedMilestonesandPercentage.length==0){
-                    DeleteRelapse()
-                    SetRelapsetime(null)
-                    setLastStreak(0)
-                    setIsShadow(false)
+    const DaysToBeAddedToCounter =
+      calcluateDaysToBeAdded(lastStreak, percentageTobeCalculated)
 
-                }
-            }
-        }
-        return ()=>{
-            isMounted
-        }
-        
-    },[isShadow,lastStreak])
+    setToAdd(DaysToBeAddedToCounter)
+    setMilestones(dividedMilestonesandPercentage)
+
+    if (dividedMilestonesandPercentage.length === 0) {
+      await DeleteRelapse()
+      SetRelapsetime(null)
+      setLastStreak(0) // 👈 this AUTO turns off shadow mode
+      await postShadowFight("won")
+    }
+  }
+
+  run()
+}, [isShadow, lastStreak, counter])
+
     
     
   return (
@@ -136,7 +127,7 @@ const ShadowMode = () => {
     <div className='flex items-center flex-col'>
         {isShadow &&(
             
-            <div className='p-10'>{Mainpercentage}% regained</div>
+            <div className='pb-15'>{Mainpercentage}% regained</div>
     )}
         
         {isShadow &&(

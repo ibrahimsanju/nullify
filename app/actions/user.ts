@@ -48,6 +48,61 @@ export async function getDate(){
     return date
 
 }
+export async function postShadowFight(result:'won'|"lost"){
+    const session = await getServerSession()
+    
+    if (!session?.user?.email){
+        throw new Error("user not authenticated")
+    }
+
+    const field = result=== "won"?"shadowWon":"shadowLost"
+
+    await prisma.counter.findFirst({
+        where:{useremail:session?.user?.email }
+    })
+     try{
+        await prisma.user.update({
+        where:{
+            email:session.user.email
+        },
+        data:{
+            [field]:{
+                increment:1,
+            }
+        }
+    })
+    }catch(e){
+        console.error("There was a problem updating shadowresult ",e)
+    }
+   
+
+}
+
+
+export async function gettally(){
+    const session = await getServerSession()
+    
+    if (!session?.user?.email){
+        throw new Error("user not authenticated")
+    }
+
+    await prisma.user.findFirst({
+        where:{email:session?.user?.email }
+    })
+     try{
+        const tally = await prisma.user.findFirst({
+        where:{
+            email:session.user.email,
+        }
+    })
+
+    return {shadowon:tally?.shadowWon,shadowlost:tally?.shadowLost}
+    }catch(e){
+        console.error("There was a problem getting tally of shadowresult ",e)
+    }
+   
+
+}
 
 export async function postStartDate(newStartDate:Date){
     const session = await getServerSession()

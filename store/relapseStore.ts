@@ -22,11 +22,11 @@ export const useRelapseStore = create<counterStore>((set)=>({
             isShadow:newshadow
         }))
     },
-    setLastStreak:(streak)=>{
-        set(()=>({
-            LastStreak:streak
-        }))
-    },
+    setLastStreak: (streak) =>
+  set(() => ({
+    LastStreak: streak,
+    isShadow: streak > 0
+  })),
     setRelapseTime:(relapseTime)=>
         set(()=>({
             RelapseTime:relapseTime ?? undefined

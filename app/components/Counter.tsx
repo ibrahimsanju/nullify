@@ -16,7 +16,7 @@ const Counter = () => {
   const relpaseTime = useRelapseStore((state)=>state.RelapseTime)
   const setLastStreak = useRelapseStore((state)=>state.setLastStreak)
   const toadd = useCounterStore((state)=>state.ToAdd)
-  const placeholder = "Press the button to start"
+  const placeholder = "Press to start"
   const Todaydate = new Date()
 
 
@@ -118,8 +118,8 @@ const Counter = () => {
 
 
   return (
-    <div className=''>
-      <p className='text-4xl font-bold text-shadow-='>{inDb? counter+toadd:placeholder}</p>
+    <div className='flex items-center'>
+      <p className='sm:text-6xl text-5xl   text-white font-bold text-shadow text-linear-to-b from-yellow-300'>{inDb? counter+toadd:placeholder}</p>
     </div>
   );
 };
